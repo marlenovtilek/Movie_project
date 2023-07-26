@@ -2,10 +2,11 @@ from django.shortcuts import render
 
 # Create your views here.
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from django_filters import rest_framework as rest_filters
 from rest_framework import filters
-from rest_framework.decorators import action 
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -65,6 +66,18 @@ class MovieViewSet(viewsets.ModelViewSet):
             movie.movie_like.remove(user)
             return Response({"message": "Лайк успешно удален!"})
         return Response({"message": "Лайк не найден!"})
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def add_to_favorites(self, request, pk=None):
+        movie = self.get_object()
+        user = request.user
+        if user not in movie.favorites.all():
+            movie.favorites.add(user)
+            return Response({"message": "Фильм добавлен в избранное!"}, status=status.HTTP_200_OK)
+        return Response({"message": "Фильм уже в избранном!"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
     
 
 

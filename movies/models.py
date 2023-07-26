@@ -13,7 +13,7 @@ class Movie(models.Model):
     movie_description = models.TextField("Описание фильма")
     top_movie = models.BooleanField(default=False)
     movie_like = models.PositiveIntegerField('Лайки', default=0)
-
+    favorites = models.ManyToManyField(User, related_name='favorite_movies', blank=True)
 
     class Meta:
         verbose_name = "Фильм"
@@ -21,3 +21,6 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.movie_name
+
+
+
